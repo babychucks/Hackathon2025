@@ -95,20 +95,20 @@ class API
 
         $api_key = $obj['api_key'];
 
-        if(!$this->checkApiKey($api_key))
+        if (!$this->checkApiKey($api_key))
             return $this->response("HTTP/1.1 400 Bad Request", null, "error", "unrecognised user", null);
 
         switch ($obj['type']) {
             case "Login":
-                    $this->login($obj['email'], $obj['password']);
+                $this->login($obj['email'], $obj['password']);
                 break;
 
             case "SignUp":
-                    $this->sign_up($obj);
+                $this->sign_up($obj);
                 break;
 
             case "GetIncCategory":
-                    $this->getIncCategory($api_key);
+                $this->getIncCategory($api_key);
                 break;
 
             case "GetExpCategory":
@@ -148,7 +148,7 @@ class API
                 break;
 
             case "RemoveUserPoints":
-                $this->removeUserPoints($api_key, $obj['point_id']);    
+                $this->removeUserPoints($api_key, $obj['point_id']);
                 break;
 
             default:
@@ -182,7 +182,42 @@ class API
 
     private function sign_up($data)
     {
+        $id = $data['id'];
+        $name = $data["name"];
+        $surname = $data["surname"];
+        $dob = $data['date_of_birth'];
+        $email = $data["email"];
+        $password = $data["password"];
+
+        $valid = true;
+        $message = "Errors:\n";
+
+        $empty = empty($id)  || empty($name) || empty($surname) || empty($dob) || empty($email)|| empty($password);
+        $email_check = preg_match('/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/', $email);
+        $pass_check = preg_match('/^((?=.*\W)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])).{8,}$/', $password);
+
+        if ($empty || ~$email_check || !$pass_check) {
+            $message .= "Missing/Invalid Credentials\n";
+            $valid = false;
+        }
+
+        $statement = $this->con->prepare("SELECT * FROM Users WHERE email= :email");
+        $statement->execute([":email" => $email]);
+        $query = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        if (count($query) > 0) {
+            $message .= "Email Already Exists\n";
+            $valid = false;
+        }
+
+        if (!$valid)
+            return $this->response("HTTP/1.1 400 Bad Request", "SignUp", "error", $message, null);
+
+        $api_key = $this->addUser($data);
+        return $this->response("HTTP/1.1 200 OK", "SignUp", "success", "User successfully added", $api_key);
     }
+
+
 
     private function getIncCategory($api_key)
     {
@@ -207,6 +242,7 @@ class API
 
     // Adders
 
+
     private function addCategory($api_key, $data)
     {
     }
@@ -217,6 +253,21 @@ class API
 
     private function addUserPoints($api_key, $points)
     {
+    }
+
+    private function addUser($data)
+    {
+        $spice = bin2hex(random_bytes(8));
+        $season = $data['password'] . $spice;
+        $cook = hash('sha256', $season);
+
+        $api_key = bin2hex(random_bytes(32));
+
+        $insert = "INSERT INTO Users (id,name,surname,D.O.B, email,password,salt,api_key) VALUES(?,?,?,?,?,?,?,?)";
+        $stm = $this->con->prepare($insert);
+        $stm->execute([$data['id'], $data['name'], $data['surname'], $data['D.O.B'], $data['email'], $cook, $spice, $api_key]);
+
+        return $api_key;
     }
 
     // Removers 
