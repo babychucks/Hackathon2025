@@ -15,7 +15,7 @@ COPY ./assets/ /var/www/html/assets/
 COPY ./vendor/ /var/www/html/vendor/
 
 # Expose the port the app runs on (If required)
-EXPOSE 80
+#EXPOSE 80
 
 # Example: Install Node.js deps
 # RUN npm install

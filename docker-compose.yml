@@ -5,7 +5,7 @@ services:
     build: .
     container_name: hackathon_web
     ports:
-      - "8080:80"
+      - "8082:80"
     volumes:
       - ./src/frontend:/var/www/html
       - ./src/backend:/var/www/html/backend

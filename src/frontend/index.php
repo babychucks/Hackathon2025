@@ -1,47 +1,75 @@
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CashLens Home</title>
+    
+</head>
 
-<header>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
-    <div class="container-fluid">
-      
-      <a class="navbar-brand" href="#">
-        <img src="/assets/imgs/cashlens.png" alt="Logo" class="d-inline-block align-text-top" style="height:40px;">
-      </a>
+<body class="bg-light">
+    <?php include 'header.php'; ?>
+<div class="container my-4">
+        <div class="row g-4">
 
-      
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+            <!-- Left Column -->
+            <div class="col-lg-6">
+                <!-- Budget Snippet -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Budget Overview</h5>
+                        <div id="pie-chart" class="mb-3" style="height:200px; background:#f8f9fa; border-radius:8px;"></div>
+                        <a href="budgets.php" class="btn btn-primary w-100">View / Edit Budgets</a>
+                    </div>
+                </div>
 
-      
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto text-center">
+                <!-- Transactions -->
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Recent Transactions</h5>
+                        <div id="transactions-list" class="mb-3" style="height:150px; background:#f8f9fa; border-radius:8px; overflow:auto;">
+                            <!-- transactions will load here -->
+                        </div>
+                        <button id="add" class="btn btn-success w-100">Add Transaction</button>
+                    </div>
+                </div>
+            </div>
 
-          
-          <li class="nav-item" id="signup-link">
-            <a class="nav-link" href="signup.php">
-              <img src="/assets/imgs/SignUp.png" alt="Sign Up" class="me-1" style="height:24px;"> Sign Up
-            </a>
-          </li>
+            <!-- Right Column -->
+            <div class="col-lg-6">
+                <!-- Upload -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Upload Bank Statement</h5>
+                        <p class="text-muted">Supported format: .csv</p>
+                        <input type="file" class="form-control mb-3" id="uploadFile" accept=".csv">
+                        <button class="btn btn-primary w-100">Upload</button>
+                    </div>
+                </div>
 
-         
-          <li class="nav-item d-none" id="logout-link">
-            <a class="nav-link" href="products.php">
-              <img src="/assets/imgs/Logout.png" alt="Logout" class="me-1" style="height:24px;"> Logout
-            </a>
-          </li>
+                <!-- AI Summary -->
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">AI Insights</h5>
+                        <div id="ai-summary" style="min-height:150px; background:#f8f9fa; border-radius:8px; padding:10px;">
+                            <!-- AI suggestions will be displayed here -->
+                        </div>
+                        <div class="d-flex gap-2 mt-3">
+                            <button class="btn btn-outline-primary flex-fill">Generate Summary</button>
+                            <button class="btn btn-outline-secondary flex-fill">Refresh</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-         
-          <li class="nav-item" id="login-link">
-            <a class="nav-link" href="login.php">
-              <img src="/assets/imgs/Login.png" alt="Login" class="me-1" style="height:24px;"> Login
-            </a>
-          </li>
-
-        </ul>
-      </div>
+        </div>
     </div>
-  </nav>
-</header>
+
+    <script>
+        document.getElementById("add").addEventListener("click", function () {
+            alert("Here you’d open a Bootstrap modal with a form to add a transaction.");
+        });
+    </script>
+</body>
+</html>
+
