@@ -252,10 +252,25 @@ class API
 
     private function getIncCategory($api_key)
     {
+        
+        $query = "SELECT category_name, category_budget FROM Income_Category";
+        $stm = $this->con->prepare($query);
+        $stm->execute();
+
+        $result = $stm->fetchAll(); //  ??is this an array
+
+        return $this->response("HTTP/1.1 200 OK", "GetIncCategory", "success", null, $result);
     }
 
     private function getExpCategory($api_key)
     {
+        $query = "SELECT category_name, category_budget FROM Expense_Category";
+        $stm = $this->con->prepare($query);
+        $stm->execute();
+
+        $result = $stm->fetchAll(); //  ??is this an array
+
+        return $this->response("HTTP/1.1 200 OK", "GetIncCategory", "success", null, $result);
     }
 
     private function getPoints($api_key)
