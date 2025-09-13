@@ -45,13 +45,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log("Response:", response);
             }
         };
-
-        req.send(JSON.stringify(transactionData));
-
-
         transactionModal.hide();
 
         transactionForm.reset();
+        req.send(JSON.stringify(transactionData));
+
 
     });
 
