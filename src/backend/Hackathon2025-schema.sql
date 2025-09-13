@@ -21,9 +21,9 @@ create table if not exists `Hackathon2025`.`Users`(
 
 create table if not exists `Hackathon2025`.`Transactions`(
     `id` INT(13) not null,
-    `transaction_id` char(8) not null Primary Key,
+    `transaction_id` int(8) not null AUTO_INCREMENT Primary Key,
     `transaction_type` enum('income', 'expense'),
-     `category` varchar(20) not null,
+    `category` varchar(20) not null,
     `transaction_amount` Decimal(12) default 0,
     `current_budget` decimal(12),
     `date` Date not null,
@@ -37,15 +37,32 @@ create table if not exists `Hackathon2025`.`Transactions`(
 );
 
 create table if not exists `Hackathon2025`.`Income_Category`(
-    `id` int(8) not null auto_increment Primary Key ,
+    `id` int(8) not null auto_increment,
+    `user_id` INT(13) not null,
     `category_name` varchar(20) not null,
-    `category_budget` Decimal(12)
+    `category_budget` Decimal(12),
+
+    Primary Key ( `id`, `user_id`),
+
+    Constraint `fk_income_user`
+        foreign key (`user_id`)
+        references `Hackathon2025`.`Users`(`id`)
+        on delete no action
+        on update no action
 );
 
 create table if not exists `Hackathon2025`.`Expense_Category`(
-    `id` int(8) not null auto_increment Primary Key ,
+    `id` int(8) not null auto_increment ,
+     `user_id` INT(13) not null,
     `category_name` varchar(20) not null,
-    `category_budget` Decimal(12)
+    `category_budget` Decimal(12),
+    Primary Key ( `id`, `user_id`),
+
+    Constraint `fk_expense_user`
+        foreign key (`user_id`)
+        references `Hackathon2025`.`Users`(`id`)
+        on delete no action
+        on update no action
 );
 
 create table if not exists `Hackathon2025`. `Points`(

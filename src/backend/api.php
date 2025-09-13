@@ -128,7 +128,7 @@ class API
                 break;
 
             case "AddCategory":
-                $this->addCategory($api_key, $obj);
+                $this->addCategory($obj);
                 break;
 
             case "AddTransaction":
@@ -362,12 +362,56 @@ class API
     // Adders
 
 
-    private function addCategory($api_key, $data)
+    private function addCategory($data)
     {
+        $type = "";
+        if ($data['category_type'] == 'income') {
+            $type = "Income_Category";
+        } else if ($data['category_type'] == "expense") {
+            $type = "Expense_Category";
+        } else
+            return $this->response("HTTP/1.1 400 Bad Request", "addCategory", "error", "Unknown Category Type", null);
+
+
+        $insert = "INSERT INTO " . $type . " (category_name, category_budget) VALUES(?,?)";
+        $stm = $this->con->prepare($insert);
+        $stm->execute($data['category_name'], $data['budget']);
+
+        return $this->response("HTTP/1.1 200 OK", "addCategory", "success", "Category successfully added", null);
     }
 
     private function addTransaction($api_key, $data)
     {
+        $query = "SELECT id FROM User WHERE api_key = :api_key";
+        $stm = $this->con->prepare($query);
+        $stm->execute([":api_key" => $api_key]);
+
+        $result = $stm->fetchAll();
+        $id = $result['id'];
+
+        //calculate current budget
+
+        $currentBudget = 
+
+        $query = "INSERT INTO Transactions (id,transaction_type,category,transaction_amount,current_budget,date,description) 
+                Values(?,?,?,?,?,?,?)";
+
+        // $type = "";
+        // if ($data['category_type'] == 'income') {
+        //     $type = "Income_Category";
+        // } else if ($data['category_type'] == "expense") {
+        //     $type = "Expense_Category";
+        // } else
+        //     return $this->response("HTTP/1.1 400 Bad Request", "addCategory", "error", "Unknown Category Type", null);
+
+        // $check = "SELECT category_name FROM ".$type;
+        // $stm = $this->con->prepare($check);
+        // $stm->execute();
+
+        // $result = $stm->fetchAll();
+        
+        // if(count($result) < 1)
+        //     return $this->response("HTTP/1.1 200 OK")
     }
 
     private function addUserPoints($api_key, $points)
