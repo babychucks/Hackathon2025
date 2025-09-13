@@ -6,7 +6,7 @@
     <div class="container-fluid">
       
       <a class="navbar-brand" href="#">
-        <img src="/assets/imgs/cashlens.png" alt="Logo" class="d-inline-block align-text-top" style="height:80px;">
+        <img src="/assets/imgs/cashlens.png" alt="Logo" class="d-inline-block align-text-top" style="height:40px;">
       </a>
 
       

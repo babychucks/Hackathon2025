@@ -14,3 +14,7 @@ pkg
 .env
 .venv
 *.log
+*.md
+*.sql
+*.sqlite
+composer.lock
