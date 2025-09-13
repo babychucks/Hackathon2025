@@ -23,12 +23,12 @@ create table if not exists `Hackathon2025`.`Transactions`(
     `id` INT(13) not null,
     `transaction_id` char(8) not null Primary Key,
     `transaction_type` enum('income', 'expense'),
-    -- `category` char(20) not null,
+     `category` varchar(20) not null,
     `transaction_amount` Decimal(12) default 0,
     `current_budget` decimal(12),
+    `date` Date not null,
+    `description` varchar(100),
 
-    -- constraint `fk_trans_income`
-    --     foreign key(`category`)
     constraint `fk_trans_user`
         foreign key (`id`)
         references `Hackathon2025`.`Users`(`id`)

@@ -116,7 +116,7 @@ class API
                 break;
 
             case "GetPoints":
-                $this->getPoints($api_key);
+                $this->getPoints();
                 break;
 
             case "GetTransactions":
@@ -252,7 +252,7 @@ class API
 
     private function getIncCategory($api_key)
     {
-        
+
         $query = "SELECT category_name, category_budget FROM Income_Category";
         $stm = $this->con->prepare($query);
         $stm->execute();
@@ -273,16 +273,89 @@ class API
         return $this->response("HTTP/1.1 200 OK", "GetIncCategory", "success", null, $result);
     }
 
-    private function getPoints($api_key)
+    private function getPoints()
     {
+        $query = "SELECT point_num, tier FROM POINTS";
+        $stm = $this->con->prepare($query);
+        $stm->execute();
+
+        $result = $stm->fetchAll();
+        return $this->response("HTTP/1.1 200 OK", "GetPoints", "success", null, $result);
     }
 
     private function getTransactions($api_key, $data)
     {
+        $query = "SELECT id FROM User WHERE api_key = :api_key";
+        $stm = $this->con->prepare($query);
+        $stm->execute([":api_key" => $api_key]);
+
+        $result = $stm->fetchAll();
+
+        $where = "";
+        $order = [];
+        $sortStr = "";
+
+        $parameters = [];
+        $parameters[':id'] = $result['id'];
+
+        if (isset($data['filter'])) {
+            $filter = $data['filter'];
+            if (isset($filter['category'])) {
+                $where .= " AND category = :category";
+                $parameters[':category'] = $filter['category'];
+            }
+
+            if (isset($filter['date'])) {
+                // is the date a range
+
+                if ($filter['date']['from'] === $filter['date']['to']) {
+                    $where .= " AND date = :date";
+                    $parameters[':date'] = $filter['date']['from'];
+                } else {
+                    $where .= " AND date BETWEEN :from AND :to";
+                    $parameters[':from'] = $filter['date']['from'];
+                    $parameters[':to'] = $filter['date']['to'];
+                }
+            }
+
+            if (isset($filter['type'])) {
+                $where .= " AND transaction_type = :type";
+                $parameters[':type'] = $filter['type'];
+            }
+        }
+
+        if (isset($data['sort'])) {
+            $sort = $data['sort'];
+            if (isset($sort['category']))
+                $order[] = "category";
+
+            if (isset($sort['date']))
+                $order[] = "date";
+
+            if (isset($sort['type']))
+                $order[] = "transaction_type";
+
+            $sortStr = " Order By " . implode(',', $order);
+        }
+
+        $query = "SELECT * FROM Transactions WHERE id=:id" . $where . $sortStr;
+        $stm = $this->con->prepare($query);
+        $stm->execute($parameters);
+
+        $result = $stm->fetchAll(PDO::FETCH_ASSOC);
+
+        return $this->response("HTTP/1.1 200 OK", "getTransactions", "success", null, $result);
     }
 
     private function getUserPoints($api_key)
     {
+        $query = "SELECT id FROM User WHERE api_key = :api_key";
+        $stm = $this->con->prepare($query);
+        $stm->execute([':api_key' => $api_key]);
+
+        $result = $stm->fetchAll(PDO::FETCH_ASSOC);
+
+        return $this->response("HTTP/1.1 200 OK", "getUserPoints", "success", null, $result);
     }
 
 
