@@ -1,17 +1,19 @@
 # Use an official base image (you should change this to your appropriate language/runtime)
-FROM ubuntu:22.04
+FROM php:7.4-apache
 
 # Install dependencies (example: Python, Node, C++ compilers, etc.)
-RUN apt-get update && apt-get install -y python3 python3-pip gcc nodejs npm
+RUN docker-php-ext-install mysqli pdo pdo_mysql
 
 # Set working directory
-WORKDIR /app
+WORKDIR /var/www/html
 
 # Copy project files
-COPY . .
+COPY ./src/ /var/www/html/
+COPY ./assets/ /var/www/html/assets/
+COPY ./vendor/ /var/www/html/vendor/
 
 # Expose the port the app runs on (If required)
-# EXPOSE 3000
+EXPOSE 80
 
 # Example: Install Node.js deps
 # RUN npm install
