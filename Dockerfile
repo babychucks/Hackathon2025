@@ -8,7 +8,9 @@ RUN docker-php-ext-install mysqli pdo pdo_mysql
 WORKDIR /var/www/html
 
 # Copy project files
-COPY ./src/ /var/www/html/
+
+COPY ./src/frontend/ /var/www/html/
+COPY ./src/backend/ /var/www/html/backend/
 COPY ./assets/ /var/www/html/assets/
 COPY ./vendor/ /var/www/html/vendor/
 
@@ -22,4 +24,4 @@ EXPOSE 80
 # RUN pip install -r requirements.txt
 
 # Default command (you should change this)
-CMD ["echo", "Hello from Docker! Customize me in Dockerfile."]
+CMD ["apache2-foreground"]
