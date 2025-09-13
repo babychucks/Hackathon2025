@@ -178,7 +178,38 @@ class API
 
     private function login($email, $password)
     {
+        if (empty($email) || empty($password))
+            return $this->response("HTTP/1.1 400 Bad Request", "Login", "error", "Invalid credentials", null);
+
+
+        $query = "SELECT api_key, salt, password FROM Users Where email = :email";
+        $stm = $this->con->prepare($query);
+        $stm->execute([':email' => $email]);
+
+        $result = $stm->fetchAll(PDO::FETCH_ASSOC);
+
+        $message = "";
+        $err = false;
+        if (count($result) < 1) {
+            $message = "User Not Found";
+            $err = true;
+        }
+
+        $result = $result[0];
+        $salt = $result['salt'];
+        $cmp = hash("sha256", $password . $salt);
+
+        if ($result['password'] !== $cmp) {
+            $message = "Invalid Credentials";
+            $err = true;
+        }
+
+        if ($err)
+            return $this->response("HTTP/1.1 400 Bad Request", "Login", "error", $message, null);
+
+        return $this->response("HTTP/1.1 200 OK", "Login", "success", "Successfully Logged in", $result['api_key']);
     }
+
 
     private function sign_up($data)
     {
@@ -192,7 +223,7 @@ class API
         $valid = true;
         $message = "Errors:\n";
 
-        $empty = empty($id)  || empty($name) || empty($surname) || empty($dob) || empty($email)|| empty($password);
+        $empty = empty($id) || empty($name) || empty($surname) || empty($dob) || empty($email) || empty($password);
         $email_check = preg_match('/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/', $email);
         $pass_check = preg_match('/^((?=.*\W)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])).{8,}$/', $password);
 
