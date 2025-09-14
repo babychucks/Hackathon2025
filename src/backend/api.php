@@ -172,6 +172,48 @@ class API
 
     private function response($header, $type, $result, $message, $data)
     {
+        header($header);
+        header("Content-Type: application/json");
+
+        $returnField = "";
+        $return = '';
+
+        switch ($type) {
+            case "Login":
+            case "SignUp":
+            case "GetIncCategory":
+            case "GetExpCategory":
+            case "GetPoints":
+            case "GetTransactions":
+            case "GetUserPoints":
+                $returnField = "data";
+                $return = $data;
+                break;
+
+            case "AddCategory":
+            case "AddTransaction":
+            case "AddUserPoints":
+            case "RemoveCategory":
+            case "RemoveTransactions":
+            case "RemoveUserPoints":
+                $returnField = "message";
+                $return = $message;
+                break;
+        }
+
+        if ($result == "success") {
+            return json_encode([
+                "status" => $result,
+                "timestamp" => time(),
+                $returnField => $return
+            ]);
+        } else {
+            return json_encode([
+                "status" => $result,
+                "timestamp" => time(),
+                "message" => $message
+            ]);
+        }
     }
 
     // Getters
@@ -253,7 +295,7 @@ class API
     private function getIncCategory($api_key)
     {
 
-        $query = "SELECT category_name, category_budget FROM Income_Category";
+        $query = "SELECT * FROM Income_Category";
         $stm = $this->con->prepare($query);
         $stm->execute();
 
@@ -264,7 +306,7 @@ class API
 
     private function getExpCategory($api_key)
     {
-        $query = "SELECT category_name, category_budget FROM Expense_Category";
+        $query = "SELECT * FROM Expense_Category";
         $stm = $this->con->prepare($query);
         $stm->execute();
 
@@ -389,33 +431,71 @@ class API
         $result = $stm->fetchAll();
         $id = $result['id'];
 
-        //calculate current budget
+        $type = "";
+        if ($data['category_type'] == 'income') {
+            $type = "Income_Category";
+        } else if ($data['category_type'] == "expense") {
+            $type = "Expense_Category";
+        } else
+            return $this->response("HTTP/1.1 400 Bad Request", "addCategory", "error", "Unknown Category Type", null);
 
-        $currentBudget = 
+
+        //calculate current budget
+        $query = "SELECT current_budget FROM Transactions  WHERE date = SELECT MAX(date) FROM Transactions";
+        $stm = $this->con->prepare($query);
+        $stm->execute();
+
+        $currentBudget = $stm->fetchAll();
+
+        $currentBudget = $currentBudget - $data['amount'];
 
         $query = "INSERT INTO Transactions (id,transaction_type,category,transaction_amount,current_budget,date,description) 
                 Values(?,?,?,?,?,?,?)";
 
-        // $type = "";
-        // if ($data['category_type'] == 'income') {
-        //     $type = "Income_Category";
-        // } else if ($data['category_type'] == "expense") {
-        //     $type = "Expense_Category";
-        // } else
-        //     return $this->response("HTTP/1.1 400 Bad Request", "addCategory", "error", "Unknown Category Type", null);
+        $stm = $this->con->prepare($query);
+        $stm->execute([$id, $type, $data['category'], $data['amount'], $currentBudget, $data['date'], $data['description']]);
+
+        return $this->response("HTTP/1.1 200 OK", "addTransaction", "success", "Transaction successfully added", null);
+
 
         // $check = "SELECT category_name FROM ".$type;
         // $stm = $this->con->prepare($check);
         // $stm->execute();
 
         // $result = $stm->fetchAll();
-        
+
         // if(count($result) < 1)
         //     return $this->response("HTTP/1.1 200 OK")
     }
 
     private function addUserPoints($api_key, $points)
     {
+        $query = "SELECT id FROM User WHERE api_key = :api_key";
+        $stm = $this->con->prepare($query);
+        $stm->execute([":api_key" => $api_key]);
+
+        $result = $stm->fetchAll();
+        $id = $result['id'];
+
+        $query = "SELECT point_num FROM Points WHERE point_id = :pid";
+        $stm = $this->con->prepare($query);
+        $stm->execute([':pid' => $points]);
+
+        $result = $stm->fetchAll();
+        $point_num = $result['point_num'];
+
+        $query = "SELECT total_points FROM User_Points WHERE user_id = :id";
+        $stm = $this->con->prepare($query);
+        $stm->execute([":id" => $id]);
+
+        $result = $stm->fetchAll();
+        $total = $result['total_points'];
+
+        $query = "UPDATE User_Points SET total_points = :total WHERE user_id = :id";
+        $stm = $this->con->prepare($query);
+        $stm->execute([':total' => ($total + $point_num), ':id' => $id]);
+
+        return $this->response("HTTP/1.1 200 OK", "addUserPoints", "success", "Point successfully added", null);
     }
 
     private function addUser($data)
@@ -437,14 +517,76 @@ class API
 
     private function removeCategory($api_key, $data)
     {
+        $query = "SELECT id FROM User WHERE api_key = :api_key";
+        $stm = $this->con->prepare($query);
+        $stm->execute([":api_key" => $api_key]);
+
+        $result = $stm->fetchAll();
+        $id = $result['id'];
+
+        $type = "";
+        if ($data['category_type'] == 'income') {
+            $type = "Income_Category";
+        } else if ($data['category_type'] == "expense") {
+            $type = "Expense_Category";
+        } else
+            return $this->response("HTTP/1.1 400 Bad Request", "addCategory", "error", "Unknown Category Type", null);
+
+
+
+        $query = "DELETE FROM " . $type . " WHERE id=:category_id AND user_id =:id";
+        $stm = $this->con->prepare($query);
+        $stm->execute([":category_id" => $data['category_id'], ":id" => $id]);
+
+        return $this->response("HTTP/1.1 200 OK", "removeCategory", "success", "Category Removed Successfully", null);
+
     }
 
     private function removeTransaction($api_key, $transaction_id)
     {
+        $query = "SELECT id FROM User WHERE api_key = :api_key";
+        $stm = $this->con->prepare($query);
+        $stm->execute([":api_key" => $api_key]);
+
+        $result = $stm->fetchAll();
+        $id = $result['id'];
+
+        $query = "DELETE FROM Transactions WHERE id=:id AND transaction_id=:tid";
+        $stm = $this->con->prepare($query);
+        $stm->execute([":id" => $id, ":tid" => $transaction_id]);
+
+        return $this->response("HTTP/1.1 200 OK", "removeTransaction", "success", "Transaction Removed Successfully", null);
+
     }
 
     private function removeUserPoints($api_key, $point_id)
     {
+        $query = "SELECT id FROM User WHERE api_key = :api_key";
+        $stm = $this->con->prepare($query);
+        $stm->execute([":api_key" => $api_key]);
+
+        $result = $stm->fetchAll();
+        $id = $result['id'];
+
+        $query = "SELECT point_num FROM Points WHERE point_id = :pid";
+        $stm = $this->con->prepare($query);
+        $stm->execute([':pid' => $point_id]);
+
+        $result = $stm->fetchAll();
+        $point_num = $result['point_num'];
+
+        $query = "SELECT total_points FROM User_Points WHERE user_id = :id";
+        $stm = $this->con->prepare($query);
+        $stm->execute([":id" => $id]);
+
+        $result = $stm->fetchAll();
+        $total = $result['total_points'];
+
+        $query = "UPDATE User_Points SET total_points = :total WHERE user_id = :id";
+        $stm = $this->con->prepare($query);
+        $stm->execute([':total' => ($total - $point_num), ':id' => $id]);
+
+        return $this->response("HTTP/1.1 200 OK", "removeUserPoints", "success", "Point successfully removed", null);
     }
 
 
@@ -453,6 +595,14 @@ class API
     //pending...
 
 
-
-
 }
+
+
+$api = API::instance();
+
+$request = $_SERVER["REQUEST_METHOD"];
+$json = file_get_contents("php://input");
+$obj - json_decode($json, true);
+
+$check = $api->reqHandler($obj, $request);
+echo $check;
