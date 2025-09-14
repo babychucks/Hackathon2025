@@ -19,9 +19,10 @@ class API
 
     private function __construct()
     {
-        require_once "config.php";
-        global $conn;
-        $this->con = $conn;
+        // require_once "config.php";
+        // global $conn;
+        // $this->con = $conn;
+         $this->con = require __DIR__ . "/config.php";
     }
 
     public function __destruct()
