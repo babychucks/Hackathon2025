@@ -244,7 +244,7 @@ class API
         $stm->execute([':email' => $email]);
 
         $result = $stm->fetch(PDO::FETCH_ASSOC);
-        var_dump($result);
+       // var_dump($result);
 
         $message = "";
         $err = false;
@@ -253,10 +253,10 @@ class API
             $err = true;
         } else {
             $salt = $result['salt'];
-            var_dump($salt);
+           // var_dump($salt);
             $cmp = hash("sha256", $password . $salt);
 
-            var_dump($cmp);
+           // var_dump($cmp);
 
             if ($result['password'] !== $cmp) {
                 $message = "Invalid Credentials";

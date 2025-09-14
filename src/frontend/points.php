@@ -10,6 +10,8 @@
 <body>
     <?php include 'header.php'; ?>
 
+    <div class="points-box"></div>
+
 </body>
 
 
