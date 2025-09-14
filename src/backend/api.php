@@ -20,7 +20,8 @@ class API
     private function __construct()
     {
         require_once "config.php";
-        $this->con = $connection;
+        global $conn;
+        $this->con = $conn;
     }
 
     public function __destruct()
@@ -57,18 +58,22 @@ class API
             $err = true;
         }
 
-        if (!$obj && urldecode($obj) == null) {
-            $message = "Invalid Object";
-            $err = true;
-        }
+       if (empty($obj) || !is_array($obj)) {
+        $message = "Invalid Object";
+        $err = true;
+    }
 
         if (!isset($obj['type'])) {
             $message = "Missing Post Parameter";
             $err = true;
         }
 
+        if (!is_array($obj) || !isset($obj['type'])) {
+            $message = "Missing Post Parameter";
+            $err = true;
+        }
 
-        $typeCheck = array_intersect($types, $obj['type']);
+        $typeCheck = array_intersect($types, (array)($obj['type'] ?? []));
         if (sizeof($typeCheck) < 1) {
             $message = "Invalid Post type";
             $err = true;
@@ -93,7 +98,12 @@ class API
 
         //  ------------------------------------------------------------
 
-        $api_key = $obj['api_key'];
+       $api_key = $obj['api_key'] ?? null;
+
+//        if (!$api_key) {
+//             return $this->response("HTTP/1.1 400 Bad Request", null, "error", "Missing API Key", null);
+// }
+
 
         if (!$this->checkApiKey($api_key))
             return $this->response("HTTP/1.1 400 Bad Request", null, "error", "unrecognised user", null);

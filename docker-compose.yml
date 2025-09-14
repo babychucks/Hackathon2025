@@ -27,6 +27,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
+      APACHE_ENVVARS: /etc/apache2/envvars
   
     ports:
       - "${MYSQL_PORT}:3306"
@@ -43,6 +44,7 @@ services:
     environment:
       PMA_HOST: db
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      APACHE_ENVVARS: /etc/apache2/envvars
     depends_on:
       - db
 
@@ -59,6 +61,7 @@ services:
       DB_HOST: db
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      APACHE_ENVVARS: /etc/apache2/envvars
 
     depends_on:
       - db
