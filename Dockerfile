@@ -1,8 +1,8 @@
 # Use an official base image (you should change this to your appropriate language/runtime)
-FROM php:7.4-apache
+FROM php:8.3-apache
 
 # Install dependencies (example: Python, Node, C++ compilers, etc.)
-RUN docker-php-ext-install mysqli pdo pdo_mysql
+RUN docker-php-ext-install pdo_mysql
 
 # Set working directory
 WORKDIR /var/www/html
