@@ -2,7 +2,7 @@
 FROM php:8.3-apache
 
 # Install dependencies (example: Python, Node, C++ compilers, etc.)
-RUN docker-php-ext-install pdo_mysql
+RUN apt-get update && docker-php-ext-install pdo_mysql 
 
 # Set working directory
 WORKDIR /var/www/html

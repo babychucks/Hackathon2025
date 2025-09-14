@@ -105,7 +105,8 @@ class API
 // }
 
 
-        if (!$this->checkApiKey($api_key))
+
+        if (isset($obj['api_key']) && !$this->checkApiKey($api_key))
             return $this->response("HTTP/1.1 400 Bad Request", null, "error", "unrecognised user", null);
 
         switch ($obj['type']) {
