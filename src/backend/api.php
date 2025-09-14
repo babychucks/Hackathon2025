@@ -112,56 +112,56 @@ class API
 
         switch ($obj['type']) {
             case "Login":
-                $this->login($obj['email'], $obj['password']);
-                break;
+               return $this->login($obj['email'], $obj['password']);
+             
 
             case "SignUp":
-                $this->sign_up($obj);
-                break;
+                return $this->sign_up($obj);
+                
 
             case "GetIncCategory":
-                $this->getIncCategory($api_key);
-                break;
+                return $this->getIncCategory($api_key);
+             
 
             case "GetExpCategory":
-                $this->getExpCategory($api_key);
-                break;
+                return $this->getExpCategory($api_key);
+              
 
             case "GetPoints":
-                $this->getPoints();
-                break;
+                return $this->getPoints();
+               
 
             case "GetTransactions":
-                $this->getTransactions($api_key, $obj);
-                break;
+               return $this->getTransactions($api_key, $obj);
+                
 
             case "GetUserPoints":
-                $this->getUserPoints($api_key);
-                break;
+                return $this->getUserPoints($api_key);
+                
 
             case "AddCategory":
-                $this->addCategory($obj);
-                break;
+                return $this->addCategory($obj);
+             
 
             case "AddTransaction":
-                $this->addTransaction($api_key, $obj);
-                break;
+                return $this->addTransaction($api_key, $obj);
+                
 
             case "AddUserPoints":
-                $this->addUserPoints($api_key, $obj);
-                break;
+                return $this->addUserPoints($api_key, $obj);
+             
 
             case "RemoveCategory":
-                $this->removeCategory($api_key, $obj);
-                break;
+                return $this->removeCategory($api_key, $obj);
+               
 
             case "RemoveTransaction":
-                $this->removeTransaction($api_key, $obj['transaction_id']);
-                break;
+                return $this->removeTransaction($api_key, $obj['transaction_id']);
+               
 
             case "RemoveUserPoints":
-                $this->removeUserPoints($api_key, $obj['point_id']);
-                break;
+                return $this->removeUserPoints($api_key, $obj['point_id']);
+               
 
             default:
                 return;
@@ -179,19 +179,12 @@ class API
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        var_dump($result);
-
         return (count($result) > 0);
     }
 
     private function response($header, $type, $result, $message, $data)
     {
-        // header($header);
-        // header("Content-Type: application/json");
-        // echo "\n function response\n";
-
-        // echo "type: $type\n";
-
+        
 
         $returnField = '';
         $return = '';
@@ -212,36 +205,23 @@ class API
             case "AddTransaction":
             case "AddUserPoints":
             case "RemoveCategory":
-            case "RemoveTransactions":
+            case "RemoveTransaction":
             case "RemoveUserPoints":
                 $returnField = "message";
                 $return = $message;
                 break;
         }
 
-        echo "result: ";
-        var_dump($result);
-        echo "\n-----------------------------\n";
-        echo "return: ";
-        var_dump($return);
-        echo "\n-----------------------------\n";
-        echo "returnField: ";
-        var_dump($returnField);
-        echo "\n-----------------------------\n";
 
-
-        header($header);
-        header("Content-Type: application/json");
-
+       
         if ($result == "success") {
-            // var_dump($return);
-            // var_dump($returnField);
-
-            return json_encode([
+           return json_encode([
                 "status" => $result,
                 "timestamp" => time(),
-                "data" => $return
+                $returnField => $return
             ]);
+
+          
         } else {
             return json_encode([
                 "status" => $result,
@@ -330,7 +310,7 @@ class API
     private function getIncCategory($api_key)
     {
 
-        $query = "SELECT id FROM User WHERE api_key = :api_key";
+        $query = "SELECT id FROM Users WHERE api_key = :api_key";
         $stm = $this->con->prepare($query);
         $stm->execute([":api_key" => $api_key]);
 
@@ -348,7 +328,7 @@ class API
 
     private function getExpCategory($api_key)
     {
-        $query = "SELECT id FROM User WHERE api_key = :api_key";
+        $query = "SELECT id FROM Users WHERE api_key = :api_key";
         $stm = $this->con->prepare($query);
         $stm->execute([":api_key" => $api_key]);
 
@@ -376,11 +356,11 @@ class API
 
     private function getTransactions($api_key, $data)
     {
-        $query = "SELECT id FROM User WHERE api_key = :api_key";
+        $query = "SELECT id FROM Users WHERE api_key = :api_key";
         $stm = $this->con->prepare($query);
         $stm->execute([":api_key" => $api_key]);
 
-        $result = $stm->fetchAll();
+        $result = $stm->fetch(PDO::FETCH_ASSOC);
 
         $where = "";
         $order = [];
@@ -430,23 +410,28 @@ class API
         }
 
         $query = "SELECT * FROM Transactions WHERE id=:id" . $where . $sortStr;
+        //var_dump($query);
         $stm = $this->con->prepare($query);
         $stm->execute($parameters);
 
         $result = $stm->fetchAll(PDO::FETCH_ASSOC);
 
-        return $this->response("HTTP/1.1 200 OK", "getTransactions", "success", null, $result);
+        // var_dump($parameters);
+        //var_dump($result);
+
+
+        return $this->response("HTTP/1.1 200 OK", "GetTransactions", "success", null, $result);
     }
 
     private function getUserPoints($api_key)
     {
-        $query = "SELECT id FROM User WHERE api_key = :api_key";
+        $query = "SELECT id FROM Users WHERE api_key = :api_key";
         $stm = $this->con->prepare($query);
         $stm->execute([':api_key' => $api_key]);
 
         $result = $stm->fetchAll(PDO::FETCH_ASSOC);
 
-        return $this->response("HTTP/1.1 200 OK", "getUserPoints", "success", null, $result);
+        return $this->response("HTTP/1.1 200 OK", "GetUserPoints", "success", null, $result);
     }
 
 
@@ -468,22 +453,18 @@ class API
         $stm = $this->con->prepare($insert);
         $stm->execute($data['category_name'], $data['budget']);
 
-        return $this->response("HTTP/1.1 200 OK", "addCategory", "success", "Category successfully added", null);
+        return $this->response("HTTP/1.1 200 OK", "AddCategory", "success", "Category successfully added", null);
     }
 
     private function addTransaction($api_key, $data)
     {
-        echo "\nFunction addTransaction\n";
+        
 
         $query = "SELECT id FROM Users WHERE api_key = :api_key";
         $stm = $this->con->prepare($query);
         $stm->execute([":api_key" => $api_key]);
 
         $result = $stm->fetch(PDO::FETCH_ASSOC);
-
-        echo "addTransaction\n";
-        var_dump($result);
-        echo "\n---------------------\n";
         $id = $result['id'];
 
 
@@ -491,6 +472,10 @@ class API
         $type = "";
         if ($data['transaction_type'] == 'income') {
             $type = "Income_Category";
+
+            $income = "UPDATE Income_Category SET category_budget = category_budget + :sum WHERE category_name = :category";
+            $stmt = $this->con->prepare($income);
+            $stmt->execute([':sum'=> $data['amount'], ":category"=> $data['category']]);
         }
 
         if ($data['transaction_type'] == "expense") {
@@ -508,8 +493,6 @@ class API
 
         $currentBudget = $stm->fetch(PDO::FETCH_ASSOC);
 
-        var_dump($currentBudget);
-
         $currentBudget = (count($currentBudget) <= 0) ? $data['amount'] : $currentBudget['current_budget'] - $data['amount'];
 
         $query = "INSERT INTO Transactions (id,transaction_type,category,transaction_amount,current_budget,date,description) 
@@ -518,7 +501,6 @@ class API
         $stm = $this->con->prepare($query);
         $stm->execute([$id, $data['transaction_type'], $data['category'], $data['amount'], $currentBudget, $data['date'], $data['description']]);
 
-        echo "returning from addTransaction\n";
 
         return $this->response("HTTP/1.1 200 OK", "AddTransaction", "success", "Transaction successfully added", null);
 
@@ -535,7 +517,7 @@ class API
 
     private function addUserPoints($api_key, $points)
     {
-        $query = "SELECT id FROM User WHERE api_key = :api_key";
+        $query = "SELECT id FROM Users WHERE api_key = :api_key";
         $stm = $this->con->prepare($query);
         $stm->execute([":api_key" => $api_key]);
 
@@ -560,7 +542,7 @@ class API
         $stm = $this->con->prepare($query);
         $stm->execute([':total' => ($total + $point_num), ':id' => $id]);
 
-        return $this->response("HTTP/1.1 200 OK", "addUserPoints", "success", "Point successfully added", null);
+        return $this->response("HTTP/1.1 200 OK", "AddUserPoints", "success", "Point successfully added", null);
     }
 
     private function addUser($data)
@@ -582,7 +564,7 @@ class API
 
     private function removeCategory($api_key, $data)
     {
-        $query = "SELECT id FROM User WHERE api_key = :api_key";
+        $query = "SELECT id FROM Users WHERE api_key = :api_key";
         $stm = $this->con->prepare($query);
         $stm->execute([":api_key" => $api_key]);
 
@@ -595,7 +577,7 @@ class API
         } else if ($data['category_type'] == "expense") {
             $type = "Expense_Category";
         } else
-            return $this->response("HTTP/1.1 400 Bad Request", "addCategory", "error", "Unknown Category Type", null);
+            return $this->response("HTTP/1.1 400 Bad Request", "AddCategory", "error", "Unknown Category Type", null);
 
 
 
@@ -603,30 +585,30 @@ class API
         $stm = $this->con->prepare($query);
         $stm->execute([":category_id" => $data['category_id'], ":id" => $id]);
 
-        return $this->response("HTTP/1.1 200 OK", "removeCategory", "success", "Category Removed Successfully", null);
+        return $this->response("HTTP/1.1 200 OK", "RemoveCategory", "success", "Category Removed Successfully", null);
 
     }
 
     private function removeTransaction($api_key, $transaction_id)
     {
-        $query = "SELECT id FROM User WHERE api_key = :api_key";
+        $query = "SELECT id FROM Users WHERE api_key = :api_key";
         $stm = $this->con->prepare($query);
         $stm->execute([":api_key" => $api_key]);
 
-        $result = $stm->fetchAll();
+        $result = $stm->fetch(PDO::FETCH_ASSOC);
         $id = $result['id'];
 
         $query = "DELETE FROM Transactions WHERE id=:id AND transaction_id=:tid";
         $stm = $this->con->prepare($query);
         $stm->execute([":id" => $id, ":tid" => $transaction_id]);
 
-        return $this->response("HTTP/1.1 200 OK", "removeTransaction", "success", "Transaction Removed Successfully", null);
+        return $this->response("HTTP/1.1 200 OK", "RemoveTransaction", "success", "Transaction Removed Successfully", null);
 
     }
 
     private function removeUserPoints($api_key, $point_id)
     {
-        $query = "SELECT id FROM User WHERE api_key = :api_key";
+        $query = "SELECT id FROM Users WHERE api_key = :api_key";
         $stm = $this->con->prepare($query);
         $stm->execute([":api_key" => $api_key]);
 
@@ -651,7 +633,7 @@ class API
         $stm = $this->con->prepare($query);
         $stm->execute([':total' => ($total - $point_num), ':id' => $id]);
 
-        return $this->response("HTTP/1.1 200 OK", "removeUserPoints", "success", "Point successfully removed", null);
+        return $this->response("HTTP/1.1 200 OK", "RemoveUserPoints", "success", "Point successfully removed", null);
     }
 
 
@@ -670,14 +652,6 @@ $request = $_SERVER["REQUEST_METHOD"];
 $json = file_get_contents("php://input");
 $obj = json_decode($json, true);
 
-// var_dump($json);
-// echo "\n";
-// var_dump($obj);
-
 
 $check = $api->reqHandler($obj, $request);
-
-echo "\n\nCHECK\n";
-var_dump($check);
-echo "\n-----------------\n";
 echo $check;
