@@ -295,9 +295,16 @@ class API
     private function getIncCategory($api_key)
     {
 
-        $query = "SELECT * FROM Income_Category";
+        $query = "SELECT id FROM User WHERE api_key = :api_key";
         $stm = $this->con->prepare($query);
-        $stm->execute();
+        $stm->execute([":api_key" => $api_key]);
+
+        $result = $stm->fetchAll();
+        $id = $result['id'];
+
+        $query = "SELECT * FROM Income_Category WHERE user_id=:id";
+        $stm = $this->con->prepare($query);
+        $stm->execute([":id" => $id]);
 
         $result = $stm->fetchAll(); //  ??is this an array
 
@@ -306,9 +313,16 @@ class API
 
     private function getExpCategory($api_key)
     {
-        $query = "SELECT * FROM Expense_Category";
+        $query = "SELECT id FROM User WHERE api_key = :api_key";
         $stm = $this->con->prepare($query);
-        $stm->execute();
+        $stm->execute([":api_key" => $api_key]);
+
+        $result = $stm->fetchAll();
+        $id = $result['id'];
+
+        $query = "SELECT * FROM Expense_Category WHERE user_id=:id";
+        $stm = $this->con->prepare($query);
+        $stm->execute([":id" => $id]);
 
         $result = $stm->fetchAll(); //  ??is this an array
 
