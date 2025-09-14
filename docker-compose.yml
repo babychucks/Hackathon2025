@@ -11,6 +11,9 @@ services:
       - ./src/backend:/var/www/html/backend
       - ./assets:/var/www/html/assets
       - ./vendor:/var/www/html/vendor
+    environment:
+      GEMINI_API_KEY: ${GEMINI_API_KEY} 
+      APACHE_ENVVARS: /etc/apache2/envvars
 
     depends_on:
       - db

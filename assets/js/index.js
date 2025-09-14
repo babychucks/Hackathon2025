@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
         };
 
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/src/backend/api.php", true);
+        xhr.open("POST", "../backend/api.php", true);
         xhr.setRequestHeader("Content-Type", "application/json");
 
 
@@ -53,6 +53,42 @@ document.addEventListener("DOMContentLoaded", function () {
 
     });
 
+    const uploadBtn = document.getElementById("uploadBtn");
+    const uploadFile = document.getElementById("uploadFile");
+
+    uploadBtn.addEventListener("click", async function () {
+        if (!uploadFile.files.length) {
+            alert("Please choose a CSV file first.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("csv", uploadFile.files[0]);
+
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "../backend/ai.php", true);
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    try {
+                        var data = JSON.parse(xhr.responseText);
+                        var output = data.output || data.error;
+                        document.getElementById("ai-summary").innerHTML = formatBudgetResponse(output);
+                    } catch (err) {
+                        document.getElementById("ai-summary").textContent = "Error parsing response: " + err.message;
+                    }
+                } else {
+                    document.getElementById("ai-summary").textContent = "Error: " + xhr.statusText;
+                }
+            }
+        };
+
+        xhr.send(formData);
+    });
+
+
 
 });
 
@@ -66,7 +102,7 @@ function loadTransactions() {
     };
 
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", "/src/backend/api.php", true);
+    xhr.open("POST", "../backend/api.php", true);
     xhr.setRequestHeader("Content-Type", "application/json");
 
     xhr.onreadystatechange = function () {
@@ -126,5 +162,33 @@ function displayTransactions(transactions) {
 
         container.appendChild(transacDiv);
     }
+}
+
+function formatBudgetResponse(aiResp) {
+    var parts = aiResp.match(/[A-Za-z ]+:\s*\d+/g);
+    var html = "";
+
+    for (var i = 0; i < parts.length; i++) {
+        var item = parts[i].trim();
+        if (item.length > 0) {
+            var categoryAmount = item.split(":");
+            var category = categoryAmount[0] ? categoryAmount[0].trim() : "";
+            var amount = categoryAmount[1] ? categoryAmount[1].trim() : "";
+
+            html +=
+                '<div class="p-2 border-bottom">' +
+                '<div class="d-flex justify-content-between">' +
+                '<div>' +
+                '<strong>' + category + '</strong>' +
+                '</div>' +
+                '<div>' +
+                '<span class="badge bg-primary">R ' + amount + '</span>' +
+                '</div>' +
+                '</div>' +
+                '</div>';
+        }
+    }
+
+    return html;
 }
 

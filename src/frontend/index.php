@@ -43,7 +43,7 @@
                         <h5 class="card-title">Upload Bank Statement</h5>
                         <p class="text-muted">Supported format: .csv</p>
                         <input type="file" class="form-control mb-3" id="uploadFile" accept=".csv">
-                        <button class="btn btn-secondary w-100">Upload</button>
+                        <button id="uploadBtn" class="btn btn-secondary w-100">Upload</button>
                     </div>
                 </div>
 
@@ -53,7 +53,6 @@
                         <div id="ai-summary" style="min-height:270px; background:#f8f9fa; border-radius:8px; padding:10px;">
                         </div>
                         <div class="d-flex gap-2 mt-3">
-                            <button class="btn btn-outline-success flex-fill">Generate Summary</button>
                             <button class="btn btn-outline-secondary flex-fill">Refresh</button>
                         </div>
                     </div>
