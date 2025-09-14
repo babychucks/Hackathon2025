@@ -14,7 +14,12 @@
     <div class="card-body">
       <h3 class="card-title text-center mb-4">SignUp</h3>
 
-      <form>
+      <form id = "signupForm">
+
+      <div class="mb-3">
+          <label for="number" class="form-label">User ID</label>
+          <input type="number" class="form-control bg-light" id="userid" placeholder="Enter your id - 13 charcters" required>
+        </div>
 
       <div class="mb-3">
           <label for="name" class="form-label">Name</label>

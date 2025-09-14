@@ -21,12 +21,11 @@ This document lists all **third-party repositories, modules, libraries, framewor
 ## 🌐 APIs & Services
 | Name          | Link / Docs                        | Author(s)      | Usage                             |
 |---------------|------------------------------------|----------------|-----------------------------------|
-| OpenWeather   | https://openweathermap.org/api     | Open Weather   | Fetching weather data             |
-| Stripe        | https://stripe.com/docs/api        | Stripe         | Payment handling                  |
-
+| Gemini API   | https://openweathermap.org/api     | Open Weather   | Fetching weather data             |
+| 
 ---
 
 ## 📊 Datasets
 | Name          | Source                              | Usage                             |
 |---------------|-------------------------------------|-----------------------------------|
-| MNIST         | http://yann.lecun.com/exdb/mnist/   | Training/testing machine learning |
+|       |    | |

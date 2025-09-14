@@ -8,9 +8,12 @@ document.addEventListener('DOMContentLoaded', function () {
         var password = document.getElementById('password').value.trim();
         var confirmed = document.getElementById('confirmed-password').value.trim();
         var dob = document.getElementById('dob').value;
+        var uid = document.getElementById('userid').value;
         var errorMessage = document.getElementById('error-message');
 
-        if (!name || !surname || !email || !password || !confirmed || !type) {
+        if (!name || !surname || !email || !password || !confirmed || !dob
+            || !uid
+        ) {
             errorMessage.textContent = 'All fields are required.';
             errorMessage.style.display = 'block';
             return;
@@ -30,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        if(!password == confirmed){
+        if (!password == confirmed) {
             errorMessage.textContent = 'Passwords do not match.';
             errorMessage.style.display = 'block';
             return;
@@ -38,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         var signupData = {
             "type": "Sign_Up",
+            "id": uid,
             "name": name,
             "surname": surname,
             "date_of_birth": dob,
@@ -46,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         var req = new XMLHttpRequest();
-        req.open("POST",  "../backend/api.php", true);
+        req.open("POST", "../backend/api.php", true);
         req.setRequestHeader("Content-Type", "application/json");
 
         req.onreadystatechange = function () {
