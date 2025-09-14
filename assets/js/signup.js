@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         var signupData = {
-            "type": "Sign_Up",
+            "type": "SignUp",
             "id": uid,
             "name": name,
             "surname": surname,
