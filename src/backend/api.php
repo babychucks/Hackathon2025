@@ -278,13 +278,13 @@ class API
         $password = $data["password"];
 
         $valid = true;
-        $message = "Errors:\n";
+        $message = "Errors: \n";
 
         $empty = empty($id) || empty($name) || empty($surname) || empty($dob) || empty($email) || empty($password);
         $email_check = preg_match('/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/', $email);
-        $pass_check = preg_match('/^((?=.*\W)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])).{8,}$/', $password);
+        $pass_check = preg_match('/^((?=.*\W)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])).{4,}$/', $password);
 
-        if ($empty || ~$email_check || !$pass_check) {
+        if ($empty || !$email_check || !$pass_check) {
             $message .= "Missing/Invalid Credentials\n";
             $valid = false;
         }
@@ -547,15 +547,15 @@ class API
 
     private function addUser($data)
     {
-        $spice = bin2hex(random_bytes(8));
+        $spice = bin2hex(random_bytes(4));
         $season = $data['password'] . $spice;
         $cook = hash('sha256', $season);
 
-        $api_key = bin2hex(random_bytes(32));
+        $api_key = bin2hex(random_bytes(16));
 
-        $insert = "INSERT INTO Users (id,name,surname,D.O.B, email,password,salt,api_key) VALUES(?,?,?,?,?,?,?,?)";
+        $insert = "INSERT INTO Users (id,name,surname,`D.O.B`, email,password,salt,api_key) VALUES(?,?,?,?,?,?,?,?)";
         $stm = $this->con->prepare($insert);
-        $stm->execute([$data['id'], $data['name'], $data['surname'], $data['D.O.B'], $data['email'], $cook, $spice, $api_key]);
+        $stm->execute([$data['id'], $data['name'], $data['surname'], $data['date_of_birth'], $data['email'], $cook, $spice, $api_key]);
 
         return $api_key;
     }
