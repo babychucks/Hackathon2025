@@ -112,56 +112,56 @@ class API
 
         switch ($obj['type']) {
             case "Login":
-               return $this->login($obj['email'], $obj['password']);
-             
+                return $this->login($obj['email'], $obj['password']);
+
 
             case "SignUp":
                 return $this->sign_up($obj);
-                
+
 
             case "GetIncCategory":
                 return $this->getIncCategory($api_key);
-             
+
 
             case "GetExpCategory":
                 return $this->getExpCategory($api_key);
-              
+
 
             case "GetPoints":
                 return $this->getPoints();
-               
+
 
             case "GetTransactions":
-               return $this->getTransactions($api_key, $obj);
-                
+                return $this->getTransactions($api_key, $obj);
+
 
             case "GetUserPoints":
                 return $this->getUserPoints($api_key);
-                
+
 
             case "AddCategory":
                 return $this->addCategory($obj);
-             
+
 
             case "AddTransaction":
                 return $this->addTransaction($api_key, $obj);
-                
+
 
             case "AddUserPoints":
                 return $this->addUserPoints($api_key, $obj);
-             
+
 
             case "RemoveCategory":
                 return $this->removeCategory($api_key, $obj);
-               
+
 
             case "RemoveTransaction":
                 return $this->removeTransaction($api_key, $obj['transaction_id']);
-               
+
 
             case "RemoveUserPoints":
                 return $this->removeUserPoints($api_key, $obj['point_id']);
-               
+
 
             default:
                 return;
@@ -184,7 +184,7 @@ class API
 
     private function response($header, $type, $result, $message, $data)
     {
-        
+
 
         $returnField = '';
         $return = '';
@@ -213,15 +213,15 @@ class API
         }
 
 
-       
+
         if ($result == "success") {
-           return json_encode([
+            return json_encode([
                 "status" => $result,
                 "timestamp" => time(),
                 $returnField => $return
             ]);
 
-          
+
         } else {
             return json_encode([
                 "status" => $result,
@@ -243,22 +243,26 @@ class API
         $stm = $this->con->prepare($query);
         $stm->execute([':email' => $email]);
 
-        $result = $stm->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stm->fetch(PDO::FETCH_ASSOC);
+        var_dump($result);
 
         $message = "";
         $err = false;
-        if (count($result) < 1) {
+        if (!$result) {
             $message = "User Not Found";
             $err = true;
-        }
+        } else {
+            $salt = $result['salt'];
+            var_dump($salt);
+            $cmp = hash("sha256", $password . $salt);
 
-        $result = $result[0];
-        $salt = $result['salt'];
-        $cmp = hash("sha256", $password . $salt);
+            var_dump($cmp);
 
-        if ($result['password'] !== $cmp) {
-            $message = "Invalid Credentials";
-            $err = true;
+            if ($result['password'] !== $cmp) {
+                $message = "Invalid Credentials";
+                $err = true;
+            }
+
         }
 
         if ($err)
@@ -458,7 +462,7 @@ class API
 
     private function addTransaction($api_key, $data)
     {
-        
+
 
         $query = "SELECT id FROM Users WHERE api_key = :api_key";
         $stm = $this->con->prepare($query);
@@ -475,7 +479,7 @@ class API
 
             $income = "UPDATE Income_Category SET category_budget = category_budget + :sum WHERE category_name = :category";
             $stmt = $this->con->prepare($income);
-            $stmt->execute([':sum'=> $data['amount'], ":category"=> $data['category']]);
+            $stmt->execute([':sum' => $data['amount'], ":category" => $data['category']]);
         }
 
         if ($data['transaction_type'] == "expense") {
