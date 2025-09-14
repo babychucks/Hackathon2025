@@ -22,7 +22,7 @@ class API
         // require_once "config.php";
         // global $conn;
         // $this->con = $conn;
-         $this->con = require __DIR__ . "/config.php";
+        $this->con = require __DIR__ . "/config.php";
     }
 
     public function __destruct()
@@ -59,10 +59,10 @@ class API
             $err = true;
         }
 
-       if (empty($obj) || !is_array($obj)) {
-        $message = "Invalid Object";
-        $err = true;
-    }
+        if (empty($obj) || !is_array($obj)) {
+            $message = "Invalid Object";
+            $err = true;
+        }
 
         if (!isset($obj['type'])) {
             $message = "Missing Post Parameter";
@@ -74,7 +74,7 @@ class API
             $err = true;
         }
 
-        $typeCheck = array_intersect($types, (array)($obj['type'] ?? []));
+        $typeCheck = array_intersect($types, (array) ($obj['type'] ?? []));
         if (sizeof($typeCheck) < 1) {
             $message = "Invalid Post type";
             $err = true;
@@ -99,9 +99,9 @@ class API
 
         //  ------------------------------------------------------------
 
-       $api_key = $obj['api_key'] ?? null;
+        $api_key = $obj['api_key'] ?? null;
 
-//        if (!$api_key) {
+        //        if (!$api_key) {
 //             return $this->response("HTTP/1.1 400 Bad Request", null, "error", "Missing API Key", null);
 // }
 
@@ -173,21 +173,27 @@ class API
         if (empty($api_key))
             return false;
 
-        $stmt = $this->con->prepare("SELECT id FROM Users WHERE api_key = :api_Key");
-        $stmt->bindparam("api_key", $api_key);
+        $stmt = $this->con->prepare("SELECT id FROM Users WHERE api_key = :api_key");
+        $stmt->bindparam(":api_key", $api_key);
         $stmt->execute();
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        return !(count($result) > 0);
+        var_dump($result);
+
+        return (count($result) > 0);
     }
 
     private function response($header, $type, $result, $message, $data)
     {
-        header($header);
-        header("Content-Type: application/json");
+        // header($header);
+        // header("Content-Type: application/json");
+        // echo "\n function response\n";
 
-        $returnField = "";
+        // echo "type: $type\n";
+
+
+        $returnField = '';
         $return = '';
 
         switch ($type) {
@@ -213,11 +219,22 @@ class API
                 break;
         }
 
+        var_dump(json_encode($result));
+        echo "\n-----------------------------\n";
+        var_dump(json_encode($return));
+         echo "\n-----------------------------\n";
+        var_dump(json_encode($returnField));
+
+
+
         if ($result == "success") {
+            // var_dump($return);
+            // var_dump($returnField);
+
             return json_encode([
                 "status" => $result,
                 "timestamp" => time(),
-                $returnField => $return
+                $returnField => mb_convert_encoding($return, "UTF-8", "UTF-8")
             ]);
         } else {
             return json_encode([
@@ -450,38 +467,54 @@ class API
 
     private function addTransaction($api_key, $data)
     {
-        $query = "SELECT id FROM User WHERE api_key = :api_key";
+        echo "\nFunction addTransaction\n";
+
+        $query = "SELECT id FROM Users WHERE api_key = :api_key";
         $stm = $this->con->prepare($query);
         $stm->execute([":api_key" => $api_key]);
 
-        $result = $stm->fetchAll();
+        $result = $stm->fetch(PDO::FETCH_ASSOC);
+
+        echo "addTransaction\n";
+        var_dump($result);
+        echo "\n---------------------\n";
         $id = $result['id'];
 
-        $type = "";
-        if ($data['category_type'] == 'income') {
-            $type = "Income_Category";
-        } else if ($data['category_type'] == "expense") {
-            $type = "Expense_Category";
-        } else
-            return $this->response("HTTP/1.1 400 Bad Request", "addCategory", "error", "Unknown Category Type", null);
 
+
+        $type = "";
+        if ($data['transaction_type'] == 'income') {
+            $type = "Income_Category";
+        }
+
+        if ($data['transaction_type'] == "expense") {
+            $type = "Expense_Category";
+        }
+
+        if ($data['transaction_type'] !== "income" && $data['category'] !== "expense") {
+            return $this->response("HTTP/1.1 400 Bad Request", "addCategory", "error", "Unknown Category Type", null);
+        }
 
         //calculate current budget
-        $query = "SELECT current_budget FROM Transactions  WHERE date = SELECT MAX(date) FROM Transactions";
+        $query = "SELECT current_budget FROM Transactions  WHERE date = (SELECT MAX(date) FROM Transactions)";
         $stm = $this->con->prepare($query);
         $stm->execute();
 
-        $currentBudget = $stm->fetchAll();
+        $currentBudget = $stm->fetch(PDO::FETCH_ASSOC);
 
-        $currentBudget = $currentBudget - $data['amount'];
+        var_dump($currentBudget);
+
+        $currentBudget = (count($currentBudget) <= 0) ? $data['amount'] : $currentBudget['current_budget'] - $data['amount'];
 
         $query = "INSERT INTO Transactions (id,transaction_type,category,transaction_amount,current_budget,date,description) 
                 Values(?,?,?,?,?,?,?)";
 
         $stm = $this->con->prepare($query);
-        $stm->execute([$id, $type, $data['category'], $data['amount'], $currentBudget, $data['date'], $data['description']]);
+        $stm->execute([$id, $data['transaction_type'], $data['category'], $data['amount'], $currentBudget, $data['date'], $data['description']]);
 
-        return $this->response("HTTP/1.1 200 OK", "addTransaction", "success", "Transaction successfully added", null);
+        echo "returning from addTransaction\n";
+
+        return $this->response("HTTP/1.1 200 OK", "AddTransaction", "success", "Transaction successfully added", null);
 
 
         // $check = "SELECT category_name FROM ".$type;
@@ -623,6 +656,7 @@ class API
 
 }
 
+//echo "Finally starting\n";
 
 $api = API::instance();
 
@@ -630,5 +664,14 @@ $request = $_SERVER["REQUEST_METHOD"];
 $json = file_get_contents("php://input");
 $obj = json_decode($json, true);
 
+// var_dump($json);
+// echo "\n";
+// var_dump($obj);
+
+
 $check = $api->reqHandler($obj, $request);
+
+echo "\n\nCHECK\n";
+var_dump($check);
+echo "\n-----------------\n";
 echo $check;
