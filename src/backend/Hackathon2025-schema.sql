@@ -74,20 +74,13 @@ create table if not exists `Hackathon2025`. `Points`(
 
 create table if not exists `Hackathon2025`.`User_Points`(
     `user_id` INT(13) not null,
-    `point_id` int(5) not null,
+    `id` int(5) not null auto_increment Primary Key,
+    `total_points` int(5) not null default 0,
     `user_tier` int(1) not null,
-
-    Primary Key(`user_id`, `point_id`),
 
     constraint `fk_user_points`
         foreign key (`user_id`)
         references `Hackathon2025`.`Users`(`id`)
-        on delete no action
-        on update no action,
-
-    constraint `fk_userpoints_points`
-        foreign key (`point_id`)
-        references `Hackathon2025`. `Points`(`point_id`)
         on delete no action
         on update no action
 );
