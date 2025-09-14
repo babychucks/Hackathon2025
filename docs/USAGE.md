@@ -28,17 +28,15 @@ Backend API → http://localhost:8082/backend/api.php
 ``` c
 // TODO: Provide step-by-step usage instructions for judges/users.
 ```
-1. Step 1 -> Do this
-2. Step 2 -> Then this
-3. Step 3 -> See the output/result
+1. Step 1 ->upload the .csv file provided/generate own.csv file and uplod on index.php for AI summary.
 
 ## 🎥 Demo
 ``` c
 // TODO: Link your demo video and PowerPoint here
 ```
 Check out the Demos: 
-- [Demo Video](../demo/demo.mp4)
-- [Demo Presentation](../demo/demo.pptx)
+- [Demo Video] https://drive.google.com/file/d/1MuIJCQ-4S9mSuFs14AT26P8c3EdyOc6G/view?usp=drive_link
+- [Demo Presentation](../demo/Demo-Powerpoint.pdf)
 
 ## 📌 Notes
 ``` c

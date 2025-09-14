@@ -24,4 +24,5 @@
 
 ## 📧 Other Contact Info
 - GitHub Repo: https://github.com/babychucks/Hackathon2025.git
+-Video : https://drive.google.com/file/d/1MuIJCQ-4S9mSuFs14AT26P8c3EdyOc6G/view?usp=drive_link
 - Other Info (if available): LinkedIn, Website, etc.

@@ -5,7 +5,7 @@
   <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
     <div class="container-fluid">
       
-      <a class="navbar-brand" href="#">
+      <a class="navbar-brand" href="index.php">
         <img src="/assets/imgs/cashlens.png" alt="Logo" class="d-inline-block align-text-top" style="height:80px;">
       </a>
 
