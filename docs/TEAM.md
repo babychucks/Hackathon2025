@@ -7,22 +7,21 @@
 ## ⚒️ Team Name
 ``` c
 // TODO: Fill-in the name of your team.
-```
+```Syntax-Sisters
 
 ## 👥 Members
 | Name     | Role                | Institution           | Discord Handle | Email |
 |----------|---------------------|-----------------------| -------------------|-------------|
-| **Name 1**   | Backend Developer   | University of Cape Town | name1 | <email1@gmail.com> |
-| **Name 2**   | Frontend Developer  | University of the Witwatersrand | name2 | <email2@gmail.com> |
-| **Name 3**   | Designer            | University of Johannesburg | name3 | <email3@gmail.com> |
-| **Name 4**   | Q.A Tester          | University of the Western Cape | name4 | <email4@gmail.com> |
+| Swekihke Makhathini   | Backend Developer   | University of Pretoria| Swe-yy | <u24584585@tuks.co.za> |
+| Unathi Tshakalisa   | Frontend Developer and paart of backend  | University of Pretoria | babychucks | <babychucks05@gmail.com> |
+
 
 ## 🏫 Institution
 ``` c
 // TODO: Fill-in the name of the institution your
 // team is competing under.
-```
+```University of Pretoria
 
 ## 📧 Other Contact Info
-- GitHub Repo: <https://github.com/user-name/repo-name>
+- GitHub Repo: https://github.com/babychucks/Hackathon2025.git
 - Other Info (if available): LinkedIn, Website, etc.

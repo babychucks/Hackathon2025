@@ -219,13 +219,19 @@ class API
                 break;
         }
 
-        var_dump(json_encode($result));
+        echo "result: ";
+        var_dump($result);
         echo "\n-----------------------------\n";
-        var_dump(json_encode($return));
-         echo "\n-----------------------------\n";
-        var_dump(json_encode($returnField));
+        echo "return: ";
+        var_dump($return);
+        echo "\n-----------------------------\n";
+        echo "returnField: ";
+        var_dump($returnField);
+        echo "\n-----------------------------\n";
 
 
+        header($header);
+        header("Content-Type: application/json");
 
         if ($result == "success") {
             // var_dump($return);
@@ -234,7 +240,7 @@ class API
             return json_encode([
                 "status" => $result,
                 "timestamp" => time(),
-                $returnField => mb_convert_encoding($return, "UTF-8", "UTF-8")
+                "data" => $return
             ]);
         } else {
             return json_encode([
