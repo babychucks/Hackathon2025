@@ -66,7 +66,7 @@
 
         logoutLink.addEventListener("click", function () {
             localStorage.clear();
-            window.location.href = "index.php";
+            window.location.href = "login.php";
         });
 
     } else {
