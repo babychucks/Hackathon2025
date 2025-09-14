@@ -1,3 +1,4 @@
+var apiKey = "b38a5765ffc3514af776dcfad414d6da"
 document.addEventListener("DOMContentLoaded", function () {
     loadTransactions();
 
@@ -20,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const amount = document.getElementById("transaction-amount").value;
         const description = document.getElementById("transaction-description").value;
         const date = document.getElementById("transaction-date").value;
-        const apiKey = localStorage.getItem("api_key") || "";
+        // const apiKey = localStorage.getItem("api_key") || "";
         console.log("Api_key = " + apiKey)
 
 
@@ -93,7 +94,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function loadTransactions() {
-    const apiKey = localStorage.getItem("api_key") || "";
+    // const apiKey = localStorage.getItem("api_key") || "";
     console.log("Api_key = " + apiKey)
 
     var requestData = {
