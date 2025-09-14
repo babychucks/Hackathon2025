@@ -12,8 +12,8 @@
 ## 👥 Members
 | Name     | Role                | Institution           | Discord Handle | Email |
 |----------|---------------------|-----------------------| -------------------|-------------|
-| Swekihke Makhathini   | Backend Developer   | University of Pretoria| Swe-yy | <u24584585@tuks.co.za> |
-| Unathi Tshakalisa   | Frontend Developer and paart of backend  | University of Pretoria | babychucks | <babychucks05@gmail.com> |
+| Swelihle Makhathini   | Backend Developer   | University of Pretoria| Swe-yy | <u24584585@tuks.co.za> |
+| Unathi Tshakalisa   | Frontend Developer and parts of backend  | University of Pretoria | babychucks | <babychucks05@gmail.com> |
 
 
 ## 🏫 Institution
